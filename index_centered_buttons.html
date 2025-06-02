@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Experience</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 1s ease;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        body.bright {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        }
+
+        .container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            gap: 15px;
+        }
+
+        .next-button-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s ease;
+}
+
+.next-button-group.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+        .btn {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            margin: 10px 0;
+            opacity: 0;
+            transform: translateY(20px);
+            position: relative;
+            z-index: 2;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1000;
+            background: black;
+            display: none;
+        }
+
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .birthday-message {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.5);
+            transition: all 1s ease;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            z-index: 5;
+        }
+
+        .birthday-message.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .birthday-message h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: sparkle 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes sparkle {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+
+        .memories-section {
+            display: none;
+            width: 100%;
+            min-height: 100vh;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .memories-title {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 1s ease;
+        }
+
+        .memories-title.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .slider-main {
+            position: relative;
+            width: 90vw;
+            height: 70vh;
+            max-width: 1200px;
+            max-height: 500px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin: 0 auto 30px;
+        }
+
+        .slider {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            position: relative;
+        }
+
+        .item {
+            width: 200px;
+            height: 300px;
+            list-style-type: none;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1;
+            background-position: center;
+            background-size: cover;
+            border-radius: 20px;
+            box-shadow: 0 20px 30px rgba(255,255,255,0.3) inset;
+            transition: transform 0.1s, left 0.75s, top 0.75s, width 0.75s, height 0.75s;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .item:nth-child(1), .item:nth-child(2) {
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            transform: none;
+            border-radius: 20px;
+            box-shadow: none;
+            opacity: 1;
+        }
+
+        .item:nth-child(3) { left: 50%; }
+        .item:nth-child(4) { left: calc(50% + 220px); }
+        .item:nth-child(5) { left: calc(50% + 440px); }
+        .item:nth-child(6) { left: calc(50% + 660px); opacity: 0; }
+
+        .nav {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
+            user-select: none;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav .btn {
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            border: 2px solid rgba(0,0,0,0.1);
+            margin: 0;
+            padding: 12px 16px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.8rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            backdrop-filter: blur(10px);
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .nav .btn:hover {
+            background: rgba(255,255,255,1);
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            color: #ff6b6b;
+        }
+
+        .nav .btn:active {
+            transform: translateY(-1px) scale(1.05);
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 5.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+            overflow: hidden;
+            z-index: 4;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            width: 0%;
+            transition: width 0.1s linear;
+            border-radius: 2px;
+        }
+
+        .memories-controls {
+            text-align: center;
+            margin-top: 20px;
+            position: relative;
+        }
+        .memories-controls .button-group {
+            position: relative;
+            top: auto;
+            left: auto;
+            transform: none;
+        }
+
+        .final-message {
+            display: none;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 40px;
+            margin: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            color: #333;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s ease;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) translateY(30px);
+            max-width: 800px;
+            width: 90%;
+        }
+
+        .final-message.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) translateY(0);
+        }
+
+        .final-message h2 {
+            color: #ff6b6b;
+            margin-bottom: 20px;
+            font-size: 2rem;
+            text-align: center;
+        }
+
+        .audio-control {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            display: none;
+            font-size: 1.2rem;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .audio-control:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        @media (width > 650px) and (width < 900px) {
+            .item {
+                width: 160px;
+                height: 270px;
+            }
+
+            .item:nth-child(3) { left: 50%; }
+            .item:nth-child(4) { left: calc(50% + 170px); }
+            .item:nth-child(5) { left: calc(50% + 340px); }
+            .item:nth-child(6) { left: calc(50% + 510px); opacity: 0; }
+        }
+
+        @media (width < 650px) {
+            .item {
+                width: 130px;
+                height: 220px;
+            }
+
+            .item:nth-child(3) { left: 50%; }
+            .item:nth-child(4) { left: calc(50% + 140px); }
+            .item:nth-child(5) { left: calc(50% + 280px); }
+            .item:nth-child(6) { left: calc(50% + 420px); opacity: 0; }
+
+            .nav .btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+
+            .memories-title {
+                font-size: 2rem;
+            }
+
+            .birthday-message h1 {
+                font-size: 2.5rem;
+            }
+            
+            .btn {
+                padding: 12px 25px;
+                font-size: 16px;
+            }
+
+            .final-message {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Button Group for Initial Buttons -->
+        <div class="button-group" id="initialButtons">
+            <!-- Initial Light Button -->
+            <button class="btn show" id="lightBtn">Turn on Light</button>
+            
+            <!-- Music Button -->
+            <button class="btn" id="musicBtn">Play Some Music</button>
+            
+            <!-- Get Ready Button -->
+            <button class="btn" id="readyBtn">Get Ready</button>
+        </div>
+        
+        <div class="birthday-message" id="birthdayMsg">
+    <h1>🎉 Happy Birthday! 🎉</h1>
+    <p>Hope your special day is filled with joy and wonderful memories!</p>
+    <div class="next-button-group" id="nextButtonGroup">
+        <button class="btn" id="nextBtn">Next Segment</button>
+    </div>
+</div>
+
+        <!-- Memories Section -->
+        <div class="memories-section" id="memoriesSection">
+            <h2 class="memories-title" id="memoriesTitle"></h2>
+            
+            <div class="slider-main">
+                <ul class='slider' id="slider">
+                    <li class='item' style="background-image: url('photos/photo1.jpg')"></li>
+                    <li class='item' style="background-image: url('photos/photo2.jpg')"></li>
+                    <li class='item' style="background-image: url('photos/photo3.jpg')"></li>
+                    <li class='item' style="background-image: url('photos/photo4.jpg')"></li>
+                    <li class='item' style="background-image: url('photos/photo5.jpg')"></li>
+                    <li class='item' style="background-image: url('photos/photo6.jpg')"></li>
+                </ul>
+              
+                
+            </div>
+            
+            <div class="memories-controls">
+                <div class="button-group">
+                    <button class="btn show" id="finalBtn">💝 My Heartfelt Message</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Final Message -->
+        <div class="final-message" id="finalMessage">
+            <h2>A Special Message for You 💝</h2>
+            <p>Birthdays are not just about growing older, but about celebrating all the wonderful moments that make you who you are. Each year brings new adventures, new memories, and new reasons to smile.</p>
+            
+            <p>As you look back on all these beautiful memories we've shared together, remember that each moment has been a gift. Your laughter, your kindness, and your spirit make every day brighter for those around you.</p>
+            
+            <p>May this new year of your life be filled with even more incredible moments, deeper friendships, exciting adventures, and endless happiness. You deserve all the joy in the world!</p>
+            
+            <p><strong>Here's to another year of making beautiful memories together! 🥳✨</strong></p>
+        </div>
+    </div>
+    
+    <!-- Video Container -->
+    <div class="video-container" id="videoContainer">
+        <video id="birthdayVideo" autoplay muted>
+            <source src="videos/birthday_video.mp4" type="video/mp4">
+            <source src="videos/birthday_video.webm" type="video/webm">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    
+    <!-- Hidden Audio -->
+    <audio id="backgroundMusic" loop>
+        <source src="music/birthday_song.mp3" type="audio/mpeg">
+        <source src="music/birthday_song.wav" type="audio/wav">
+        <source src="music/birthday_song.ogg" type="audio/ogg">
+    </audio>
+    
+    <!-- Audio Control -->
+    <button class="audio-control" id="audioControl" style="display: none;">🔊</button>
+
+    <script>
+        // Local file paths (you can update these to your actual image paths)
+        const imageUrls = [
+            "photos/photo1.jpg",
+            "photos/photo2.jpg", 
+            "photos/photo3.jpg",
+            "photos/photo4.jpg",
+            "photos/photo5.jpg",
+            "photos/photo6.jpg"
+        ];
+
+        let isPlaying = false;
+        let autoSlideInterval = null;
+        let progressInterval = null;
+        let isAutoSliding = true;
+        let progressValue = 0;
+
+        // Slider navigation function
+        function activate(e) {
+            const slider = document.querySelector('.slider');
+            const items = document.querySelectorAll('.item');
+            
+            if (!slider || items.length === 0) return;
+            
+            if (e.target.matches('.next')) {
+                slider.append(items[0]);
+                resetProgress();
+            }
+        }
+
+        // Auto slide function
+        function nextSlide() {
+            const slider = document.querySelector('.slider');
+            const items = document.querySelectorAll('.item');
+            
+            if (slider && items.length > 0) {
+                slider.append(items[0]);
+            }
+        }
+
+        // Progress bar functions
+        function updateProgress() {
+            progressValue += 2; // Increment every 100ms for 5 seconds
+            if (progressValue >= 100) {
+                progressValue = 0;
+                nextSlide();
+            }
+            const progressFill = document.getElementById('progressFill');
+            if (progressFill) {
+                progressFill.style.width = progressValue + '%';
+            }
+        }
+
+        function resetProgress() {
+            progressValue = 0;
+            const progressFill = document.getElementById('progressFill');
+            if (progressFill) {
+                progressFill.style.width = '0%';
+            }
+        }
+
+        function startAutoSlide() {
+            if (isAutoSliding && !progressInterval) {
+                progressInterval = setInterval(updateProgress, 100);
+            }
+        }
+
+        function stopAutoSlide() {
+            if (progressInterval) {
+                clearInterval(progressInterval);
+                progressInterval = null;
+            }
+            resetProgress();
+        }
+
+        function toggleAutoSlide() {
+            isAutoSliding = !isAutoSliding;
+            
+            if (isAutoSliding) {
+                startAutoSlide();
+            } else {
+                stopAutoSlide();
+            }
+        }
+
+        // Keyboard navigation function
+        function handleKeyboard(e) {
+            const memoriesSection = document.getElementById('memoriesSection');
+            // Only work when memories section is visible
+            if (!memoriesSection || memoriesSection.style.display !== 'block') return;
+            
+            const slider = document.querySelector('.slider');
+            const items = document.querySelectorAll('.item');
+            
+            if (!slider || items.length === 0) return;
+            
+            if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+                e.preventDefault();
+                slider.append(items[0]);
+                resetProgress();
+            }
+            if (e.key === ' ') { // Spacebar to pause/resume
+                e.preventDefault();
+                toggleAutoSlide();
+            }
+        }
+
+        // Get elements
+        const lightBtn = document.getElementById('lightBtn');
+        const musicBtn = document.getElementById('musicBtn');
+        const readyBtn = document.getElementById('readyBtn');
+        const initialButtons = document.getElementById('initialButtons');
+        const birthdayMsg = document.getElementById('birthdayMsg');
+        const nextBtn = document.getElementById('nextBtn');
+        const nextButtonGroup = document.getElementById('nextButtonGroup');
+        const memoriesSection = document.getElementById('memoriesSection');
+        const memoriesTitle = document.getElementById('memoriesTitle');
+        const finalBtn = document.getElementById('finalBtn');
+        const finalMessage = document.getElementById('finalMessage');
+        const videoContainer = document.getElementById('videoContainer');
+        const birthdayVideo = document.getElementById('birthdayVideo');
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        const audioControl = document.getElementById('audioControl');
+
+        // Event listeners
+        lightBtn.addEventListener('click', () => {
+            document.body.classList.add('bright');
+            lightBtn.style.display = 'none';
+            setTimeout(() => {
+                musicBtn.classList.add('show');
+            }, 1000);
+        });
+
+        musicBtn.addEventListener('click', () => {
+            // Try to play background music
+            backgroundMusic.play().then(() => {
+                isPlaying = true;
+                audioControl.style.display = 'flex';
+                audioControl.textContent = '🔊';
+            }).catch((error) => {
+                // Fallback if audio fails
+                console.log('Audio autoplay prevented by browser:', error);
+                audioControl.style.display = 'flex';
+                audioControl.textContent = '🔇';
+            });
+            
+            musicBtn.style.display = 'none';
+            setTimeout(() => {
+                readyBtn.classList.add('show');
+            }, 1000);
+        });
+
+        readyBtn.addEventListener('click', () => {
+            initialButtons.style.display = 'none';
+            videoContainer.style.display = 'block';
+            
+            // Try to play video
+            birthdayVideo.play().catch((error) => {
+                console.log('Video autoplay prevented:', error);
+                // If video fails, proceed to next step
+                setTimeout(() => {
+                    videoContainer.style.display = 'none';
+                    showBirthdayMessage();
+                }, 1000);
+            });
+        });
+
+{
+  const nextButtonGroup = document.getElementById('nextButtonGroup');
+}
+
+        function showBirthdayMessage() {
+    birthdayMsg.classList.add('show');
+    setTimeout(() => {
+        nextButtonGroup.classList.add('show');  // makes it fade in
+        nextBtn.classList.add('show');          // animates button
+    }, 1500);
+}
+
+
+
+        birthdayVideo.addEventListener('ended', () => {
+            videoContainer.style.display = 'none';
+            setTimeout(() => {
+                showBirthdayMessage();
+            }, 500);
+        });
+
+        // Add error handling for video
+        birthdayVideo.addEventListener('error', () => {
+            console.log('Video failed to load');
+            videoContainer.style.display = 'none';
+            setTimeout(() => {
+                showBirthdayMessage();
+            }, 500);
+        });
+
+        nextBtn.addEventListener('click', () => {
+            birthdayMsg.style.display = 'none';
+            nextButtonGroup.style.display = 'none';
+            memoriesSection.style.display = 'block';
+            
+            // Show memories title with animation
+            setTimeout(() => {
+                memoriesTitle.classList.add('show');
+                // Start auto-slide after title animation
+                setTimeout(() => {
+                    startAutoSlide();
+                }, 1000);
+            }, 300);
+        });
+
+        finalBtn.addEventListener('click', () => {
+            stopAutoSlide(); // Stop auto-slide when going to final message
+            memoriesSection.style.display = 'none';
+            finalMessage.style.display = 'block';
+            setTimeout(() => {
+                finalMessage.classList.add('show');
+            }, 100);
+        });
+
+        // Slider event listener
+        document.addEventListener('click', activate, false);
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', handleKeyboard, false);
+
+        // Audio control
+        audioControl.addEventListener('click', () => {
+            if (isPlaying) {
+                backgroundMusic.pause();
+                audioControl.textContent = '🔇';
+                isPlaying = false;
+            } else {
+                backgroundMusic.play().then(() => {
+                    audioControl.textContent = '🔊';
+                    isPlaying = true;
+                }).catch((error) => {
+                    console.log('Audio play failed:', error);
+                });
+            }
+        });
+
+        // Pause auto-slide when user interacts with slider
+        let interactionTimeout;
+        document.addEventListener('mouseenter', (e) => {
+            if (e.target.matches('.nav .btn') && isAutoSliding) {
+                stopAutoSlide();
+                clearTimeout(interactionTimeout);
+                interactionTimeout = setTimeout(() => {
+                    if (isAutoSliding && memoriesSection.style.display === 'block') {
+                        startAutoSlide();
+                    }
+                }, 3000); // Resume after 3 seconds of no interaction
+            }
+        });
+
+        // Initialize - make sure first button is visible
+        window.addEventListener('load', () => {
+            lightBtn.classList.add('show');
+        });
+    </script>
+</body>
+</html>
